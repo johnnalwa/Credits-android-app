@@ -1,20 +1,22 @@
 package com.example.calcitecredits;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class UpdateLoanActivity extends AppCompatActivity {
-    private TextView nameTextView, phoneTextView, dateTextView, periodTextView, interestTextView;
-    private EditText amountEditText;
-    private Button updateButton;
+    private static final String TAG = "UpdateLoanActivity";
+    private TextInputEditText nameEditText, phoneEditText, dateEditText, periodEditText, interestEditText, amountEditText;
+    private MaterialButton updateButton;
     private DatabaseHelper dbHelper;
     private Loan loan;
 
@@ -25,11 +27,11 @@ public class UpdateLoanActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        nameTextView = findViewById(R.id.nameTextView);
-        phoneTextView = findViewById(R.id.phoneTextView);
-        dateTextView = findViewById(R.id.dateTextView);
-        periodTextView = findViewById(R.id.periodTextView);
-        interestTextView = findViewById(R.id.interestTextView);
+        nameEditText = findViewById(R.id.nameEditText);
+        phoneEditText = findViewById(R.id.phoneEditText);
+        dateEditText = findViewById(R.id.dateEditText);
+        periodEditText = findViewById(R.id.periodEditText);
+        interestEditText = findViewById(R.id.interestEditText);
         amountEditText = findViewById(R.id.amountEditText);
         updateButton = findViewById(R.id.updateButton);
 
@@ -56,24 +58,41 @@ public class UpdateLoanActivity extends AppCompatActivity {
     }
 
     private void displayLoanDetails() {
-        nameTextView.setText(loan.getLoaneeName());
-        phoneTextView.setText(loan.getPhoneNumber());
-        dateTextView.setText(loan.getLoanDate());
-        periodTextView.setText(String.valueOf(loan.getRepaymentPeriod()));
-        interestTextView.setText(String.format(Locale.getDefault(), "Ksh %.2f", loan.getInterestPerWeek()));
+        nameEditText.setText(loan.getLoaneeName());
+        phoneEditText.setText(loan.getPhoneNumber());
+        dateEditText.setText(loan.getLoanDate());
+        periodEditText.setText(String.valueOf(loan.getRepaymentPeriod()));
+        interestEditText.setText(String.format(Locale.getDefault(), "%.2f", loan.getInterestPerWeek()));
         amountEditText.setText(String.format(Locale.getDefault(), "%.2f", loan.getLoanAmount()));
     }
 
     private void updateLoan() {
+        String name = nameEditText.getText().toString().trim();
+        String phone = phoneEditText.getText().toString().trim();
+        String date = dateEditText.getText().toString().trim();
+        String periodStr = periodEditText.getText().toString().trim();
+        String interestStr = interestEditText.getText().toString().trim();
         String amountStr = amountEditText.getText().toString().trim();
 
-        if (amountStr.isEmpty()) {
-            Toast.makeText(this, "Please enter the updated amount", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || phone.isEmpty() || date.isEmpty() || periodStr.isEmpty() || interestStr.isEmpty() || amountStr.isEmpty()) {
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double updatedAmount = Double.parseDouble(amountStr);
-        loan.setLoanAmount(updatedAmount);
+        loan.setLoaneeName(name);
+        loan.setPhoneNumber(phone);
+        loan.setLoanDate(date);
+        loan.setRepaymentPeriod(Integer.parseInt(periodStr));
+        loan.setInterestPerWeek(Double.parseDouble(interestStr));
+        loan.setLoanAmount(Double.parseDouble(amountStr));
+
+        // Calculate and set the repayment date
+        loan.setRepaymentDate(calculateRepaymentDate(date, Integer.parseInt(periodStr)));
+
+        // Assuming the status remains the same, but you can update it if needed
+        // loan.setStatus("Active");
+
+        Log.d(TAG, "Updating loan: " + loan.toString());
 
         int result = dbHelper.updateLoan(loan);
 
@@ -82,6 +101,20 @@ public class UpdateLoanActivity extends AppCompatActivity {
             finish();
         } else {
             Toast.makeText(this, "Failed to update loan", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private Date calculateRepaymentDate(String loanDate, int repaymentPeriod) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date date = sdf.parse(loanDate);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.add(Calendar.DAY_OF_YEAR, repaymentPeriod);
+            return calendar.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new Date(); // Return current date if parsing fails
         }
     }
 }

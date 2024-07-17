@@ -78,42 +78,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Loan> getAllLoans() {
         List<Loan> loanList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_LOANS;
+        String selectQuery = "SELECT * FROM " + TABLE_LOANS + " ORDER BY " + COLUMN_REPAYMENT_DATE + " ASC";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
+
         try {
             cursor = db.rawQuery(selectQuery, null);
             if (cursor.moveToFirst()) {
                 do {
-                    Loan loan = new Loan();
-                    loan.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-                    loan.setLoaneeName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOANEE_NAME)));
-                    loan.setPhoneNumber(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE_NUMBER)));
-                    loan.setLoanAmount(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LOAN_AMOUNT)));
-                    loan.setLoanDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOAN_DATE)));
-                    loan.setRepaymentPeriod(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REPAYMENT_PERIOD)));
-                    loan.setInterestPerWeek(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_INTEREST_PER_WEEK)));
-                    loan.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
-
-                    String repaymentDateStr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPAYMENT_DATE));
-                    if (repaymentDateStr != null) {
-                        try {
-                            loan.setRepaymentDate(dateFormat.parse(repaymentDateStr));
-                        } catch (ParseException e) {
-                            Log.e(TAG, "Error parsing repayment date: " + repaymentDateStr, e);
-                            loan.setRepaymentDate(new Date());
-                        }
-                    } else {
-                        loan.setRepaymentDate(new Date());
-                    }
-
+                    Loan loan = cursorToLoan(cursor);
                     loanList.add(loan);
                 } while (cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error getting all loans", e);
+            Log.e(TAG, "Error getting loans", e);
         } finally {
-            if (cursor != null) {
+            if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
             db.close();
@@ -124,11 +104,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int updateLoan(Loan loan) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(COLUMN_LOANEE_NAME, loan.getLoaneeName());
+        values.put(COLUMN_PHONE_NUMBER, loan.getPhoneNumber());
         values.put(COLUMN_LOAN_AMOUNT, loan.getLoanAmount());
+        values.put(COLUMN_LOAN_DATE, loan.getLoanDate());
+        values.put(COLUMN_REPAYMENT_PERIOD, loan.getRepaymentPeriod());
+        values.put(COLUMN_INTEREST_PER_WEEK, loan.getInterestPerWeek());
         values.put(COLUMN_STATUS, loan.getStatus());
         values.put(COLUMN_REPAYMENT_DATE, dateFormat.format(loan.getRepaymentDate()));
+
         int result = db.update(TABLE_LOANS, values, COLUMN_ID + " = ?",
                 new String[]{String.valueOf(loan.getId())});
+
+        Log.d(TAG, "Updating loan with ID: " + loan.getId() + ", Result: " + result);
+        Log.d(TAG, "Updated values: " + values.toString());
+
         db.close();
         return result;
     }
@@ -139,30 +129,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(id)}, null, null, null);
         Loan loan = null;
         if (cursor != null && cursor.moveToFirst()) {
-            loan = new Loan();
-            loan.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            loan.setLoaneeName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOANEE_NAME)));
-            loan.setPhoneNumber(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE_NUMBER)));
-            loan.setLoanAmount(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LOAN_AMOUNT)));
-            loan.setLoanDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOAN_DATE)));
-            loan.setRepaymentPeriod(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REPAYMENT_PERIOD)));
-            loan.setInterestPerWeek(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_INTEREST_PER_WEEK)));
-            loan.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
-            String repaymentDateStr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPAYMENT_DATE));
-            if (repaymentDateStr != null) {
-                try {
-                    loan.setRepaymentDate(dateFormat.parse(repaymentDateStr));
-                } catch (ParseException e) {
-                    Log.e(TAG, "Error parsing repayment date: " + repaymentDateStr, e);
-                    loan.setRepaymentDate(new Date());
-                }
-            } else {
-                loan.setRepaymentDate(new Date());
-            }
+            loan = cursorToLoan(cursor);
             cursor.close();
         }
         db.close();
         return loan;
     }
-}
 
+    private Loan cursorToLoan(Cursor cursor) {
+        Loan loan = new Loan();
+        loan.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        loan.setLoaneeName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOANEE_NAME)));
+        loan.setPhoneNumber(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE_NUMBER)));
+        loan.setLoanAmount(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LOAN_AMOUNT)));
+        loan.setLoanDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOAN_DATE)));
+        loan.setRepaymentPeriod(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REPAYMENT_PERIOD)));
+        loan.setInterestPerWeek(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_INTEREST_PER_WEEK)));
+        loan.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
+
+        String repaymentDateStr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REPAYMENT_DATE));
+        if (repaymentDateStr != null) {
+            try {
+                loan.setRepaymentDate(dateFormat.parse(repaymentDateStr));
+            } catch (ParseException e) {
+                Log.e(TAG, "Error parsing repayment date: " + repaymentDateStr, e);
+                loan.setRepaymentDate(new Date());
+            }
+        } else {
+            loan.setRepaymentDate(new Date());
+        }
+
+        return loan;
+    }
+}

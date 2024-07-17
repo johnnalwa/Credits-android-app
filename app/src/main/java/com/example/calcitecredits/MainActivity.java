@@ -73,23 +73,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateStatistics() {
         try {
-            List<Loan> loans = dbHelper.getAllLoans();
+            List<Loan> allLoans = dbHelper.getAllLoans();
+
             double totalLoanAmount = 0;
             double totalUnpaidAmount = 0;
             double totalPaidAmount = 0;
+            int unpaidCount = 0;
+            int paidCount = 0;
 
-            for (Loan loan : loans) {
+            for (Loan loan : allLoans) {
                 totalLoanAmount += loan.getLoanAmount();
-                double totalRepaymentAmount = calculateTotalRepaymentAmount(loan);
-                if ("Unpaid".equals(loan.getStatus())) {
-                    totalUnpaidAmount += totalRepaymentAmount;
+                double repaymentAmount = calculateTotalRepaymentAmount(loan);
+
+                if ("Paid".equals(loan.getStatus())) {
+                    totalPaidAmount += repaymentAmount;
+                    paidCount++;
                 } else {
-                    totalPaidAmount += totalRepaymentAmount;
+                    totalUnpaidAmount += repaymentAmount;
+                    unpaidCount++;
                 }
             }
 
+            int totalLoanees = allLoans.size();
+
             totalLoansAmountTextView.setText(String.format(Locale.getDefault(), "Ksh %.2f", totalLoanAmount));
-            totalLoaneesTextView.setText(String.valueOf(loans.size()));
+            totalLoaneesTextView.setText(String.valueOf(totalLoanees));
             unpaidAmountTextView.setText(String.format(Locale.getDefault(), "Ksh %.2f", totalUnpaidAmount));
             paidAmountTextView.setText(String.format(Locale.getDefault(), "Ksh %.2f", totalPaidAmount));
         } catch (Exception e) {

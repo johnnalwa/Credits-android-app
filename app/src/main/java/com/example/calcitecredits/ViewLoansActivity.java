@@ -4,24 +4,38 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class ViewLoansActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private DatabaseHelper dbHelper;
+    private LoanAdapter adapter;
+    private List<Loan> allLoans;
+    private TextInputEditText searchEditText;
+    private Spinner sortSpinner;
+    private String currentSortOption = "All";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +46,34 @@ public class ViewLoansActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        searchEditText = findViewById(R.id.searchEditText);
+
+
+        allLoans = new ArrayList<>();
+        adapter = new LoanAdapter(allLoans);
+        recyclerView.setAdapter(adapter);
+
+        setupSearchEditText();
+
         loadLoans();
     }
+
+    private void setupSearchEditText() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterLoans(s.toString());
+            }
+        });
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -42,15 +82,34 @@ public class ViewLoansActivity extends AppCompatActivity {
     }
 
     private void loadLoans() {
-        List<Loan> loans = dbHelper.getAllLoans();
-        LoanAdapter adapter = new LoanAdapter(loans);
-        recyclerView.setAdapter(adapter);
+        allLoans.clear();
+        allLoans.addAll(dbHelper.getAllLoans());
+        filterLoans(searchEditText.getText().toString());
+    }
+
+    private void filterLoans(String query) {
+        List<Loan> filteredList = new ArrayList<>();
+        for (Loan loan : allLoans) {
+            if (loan.getLoaneeName().toLowerCase().contains(query.toLowerCase())) {
+                if (currentSortOption.equals("All") ||
+                        (currentSortOption.equals("Paid") && loan.getStatus().equals("Paid")) ||
+                        (currentSortOption.equals("Unpaid") && loan.getStatus().equals("Unpaid"))) {
+                    filteredList.add(loan);
+                }
+            }
+        }
+        adapter.setLoans(filteredList);
+        adapter.notifyDataSetChanged();
     }
 
     private class LoanAdapter extends RecyclerView.Adapter<LoanViewHolder> {
         private List<Loan> loans;
 
         public LoanAdapter(List<Loan> loans) {
+            this.loans = loans;
+        }
+
+        public void setLoans(List<Loan> loans) {
             this.loans = loans;
         }
 
