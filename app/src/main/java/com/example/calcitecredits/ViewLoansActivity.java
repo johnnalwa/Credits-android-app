@@ -48,7 +48,6 @@ public class ViewLoansActivity extends AppCompatActivity {
 
         searchEditText = findViewById(R.id.searchEditText);
 
-
         allLoans = new ArrayList<>();
         adapter = new LoanAdapter(allLoans);
         recyclerView.setAdapter(adapter);
@@ -72,8 +71,6 @@ public class ViewLoansActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
     @Override
     protected void onResume() {
@@ -205,6 +202,7 @@ public class ViewLoansActivity extends AppCompatActivity {
 
         double remainingAmount = loan.getLoanAmount() - paymentAmount;
         loan.setLoanAmount(remainingAmount);
+        loan.setPaidAmount(loan.getPaidAmount() + paymentAmount); // Update paid amount
 
         if (remainingAmount == 0) {
             loan.setStatus("Paid");
@@ -215,6 +213,11 @@ public class ViewLoansActivity extends AppCompatActivity {
         if (result > 0) {
             Toast.makeText(this, "Payment processed successfully", Toast.LENGTH_SHORT).show();
             loadLoans(); // Refresh the list
+
+            // Update statistics in MainActivity
+            Intent intent = new Intent(ViewLoansActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         } else {
             Toast.makeText(this, "Failed to process payment", Toast.LENGTH_SHORT).show();
         }

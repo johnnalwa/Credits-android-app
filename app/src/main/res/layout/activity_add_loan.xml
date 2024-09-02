@@ -5,24 +5,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#FAFAFA">
+    android:background="#FFFFFF">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add New Loan"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="#6750A4"
+        android:textColor="#0D47A1"
         android:layout_gravity="center"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="32dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:boxStrokeColor="#6750A4"
-        app:hintTextColor="#6750A4"
+        app:boxStrokeColor="#1976D2"
+        app:hintTextColor="#1976D2"
+        app:boxStrokeWidth="2dp"
+        android:textColorHint="#64B5F6"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -30,15 +32,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Loanee Name"
-            android:textColor="#6750A4" />
+            android:textColor="#0D47A1"
+            android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:boxStrokeColor="#6750A4"
-        app:hintTextColor="#6750A4"
+        app:boxStrokeColor="#1976D2"
+        app:hintTextColor="#1976D2"
+        app:boxStrokeWidth="2dp"
+        android:textColorHint="#64B5F6"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -47,15 +52,18 @@
             android:layout_height="wrap_content"
             android:hint="Phone Number"
             android:inputType="phone"
-            android:textColor="#6750A4" />
+            android:textColor="#0D47A1"
+            android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:boxStrokeColor="#6750A4"
-        app:hintTextColor="#6750A4"
+        app:boxStrokeColor="#1976D2"
+        app:hintTextColor="#1976D2"
+        app:boxStrokeWidth="2dp"
+        android:textColorHint="#64B5F6"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -64,32 +72,38 @@
             android:layout_height="wrap_content"
             android:hint="Loan Amount"
             android:inputType="numberDecimal"
-            android:textColor="#6750A4" />
+            android:textColor="#0D47A1"
+            android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:boxStrokeColor="#6750A4"
-        app:hintTextColor="#6750A4"
+        app:boxStrokeColor="#1976D2"
+        app:hintTextColor="#1976D2"
+        app:boxStrokeWidth="2dp"
+        android:textColorHint="#64B5F6"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/periodEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Repayment Period (days)"
+            android:hint="Repayment Period (Weeks)"
             android:inputType="number"
-            android:textColor="#6750A4" />
+            android:textColor="#0D47A1"
+            android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        app:boxStrokeColor="#6750A4"
-        app:hintTextColor="#6750A4"
+        android:layout_marginBottom="32dp"
+        app:boxStrokeColor="#1976D2"
+        app:hintTextColor="#1976D2"
+        app:boxStrokeWidth="2dp"
+        android:textColorHint="#64B5F6"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -98,7 +112,8 @@
             android:layout_height="wrap_content"
             android:hint="Interest per Week"
             android:inputType="numberDecimal"
-            android:textColor="#6750A4" />
+            android:textColor="#0D47A1"
+            android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -107,8 +122,10 @@
         android:layout_height="wrap_content"
         android:text="Add Loan"
         android:textColor="#FFFFFF"
-        android:padding="12dp"
+        android:textSize="18sp"
+        android:padding="16dp"
         app:cornerRadius="8dp"
-        android:backgroundTint="#6750A4" />
+        android:backgroundTint="#1976D2"
+        app:elevation="4dp" />
 
 </LinearLayout>

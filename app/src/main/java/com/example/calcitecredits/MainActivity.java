@@ -3,17 +3,15 @@ package com.example.calcitecredits;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private Button addLoanButton;
-    private Button viewLoansButton;
     private TextView totalLoansAmountTextView;
     private TextView totalLoaneesTextView;
     private TextView unpaidAmountTextView;
@@ -32,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             initializeViews();
-            setupListeners();
+            setupNavigation();
             dbHelper = new DatabaseHelper(this);
             updateStatistics();
         } catch (Exception e) {
@@ -42,17 +40,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        addLoanButton = findViewById(R.id.addLoanButton);
-        viewLoansButton = findViewById(R.id.viewLoansButton);
         totalLoansAmountTextView = findViewById(R.id.totalLoansAmount);
         totalLoaneesTextView = findViewById(R.id.totalLoanees);
         unpaidAmountTextView = findViewById(R.id.unpaidAmount);
         paidAmountTextView = findViewById(R.id.paidAmount);
     }
 
-    private void setupListeners() {
-        addLoanButton.setOnClickListener(v -> startActivity(AddLoanActivity.class));
-        viewLoansButton.setOnClickListener(v -> startActivity(ViewLoansActivity.class));
+    private void setupNavigation() {
+        BottomNavigationView bottomNav = findViewById(R.id.footerMenu);
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.addLoan) {
+                startActivity(AddLoanActivity.class);
+                return true;
+            } else if (itemId == R.id.viewLoans) {
+                startActivity(ViewLoansActivity.class);
+                return true;
+            } else if (itemId == R.id.dashboard) {
+                // Handle dashboard action (e.g., refresh current view)
+                updateStatistics();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void startActivity(Class<?> cls) {
@@ -86,10 +96,10 @@ public class MainActivity extends AppCompatActivity {
                 double repaymentAmount = calculateTotalRepaymentAmount(loan);
 
                 if ("Paid".equals(loan.getStatus())) {
-                    totalPaidAmount += repaymentAmount;
+                    totalPaidAmount += loan.getPaidAmount(); // Use paid amount
                     paidCount++;
                 } else {
-                    totalUnpaidAmount += repaymentAmount;
+                    totalUnpaidAmount += loan.getLoanAmount(); // Use loan amount for unpaid loans
                     unpaidCount++;
                 }
             }
@@ -108,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
 
     private double calculateTotalRepaymentAmount(Loan loan) {
         double principal = loan.getLoanAmount();
-        double interestRate = loan.getInterestPerWeek() / 100.0;
+        double interestRate = loan.getInterestPerWeek();
         int repaymentPeriodInWeeks = loan.getRepaymentPeriod();
-        return principal * (1 + (interestRate * repaymentPeriodInWeeks));
+        return principal + (interestRate * repaymentPeriodInWeeks);
     }
 }

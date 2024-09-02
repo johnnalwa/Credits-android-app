@@ -6,7 +6,7 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="#FAFAFA"
+    app:cardBackgroundColor="#F0F8FF"
     android:padding="16dp">
 
     <LinearLayout
@@ -27,13 +27,13 @@
                 android:layout_height="wrap_content"
                 android:text="Name: "
                 android:textStyle="bold"
-                android:textColor="#6750A4" />
+                android:textColor="#1565C0" />
 
             <TextView
                 android:id="@+id/nameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#6750A4"
+                android:textColor="#1565C0"
                 android:paddingStart="4dp" />
         </LinearLayout>
 
@@ -49,13 +49,13 @@
                 android:layout_height="wrap_content"
                 android:text="Amount: "
                 android:textStyle="bold"
-                android:textColor="#6750A4" />
+                android:textColor="#1565C0" />
 
             <TextView
                 android:id="@+id/amountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#6750A4"
+                android:textColor="#1565C0"
                 android:paddingStart="4dp" />
         </LinearLayout>
 
@@ -71,13 +71,13 @@
                 android:layout_height="wrap_content"
                 android:text="Repayment Date: "
                 android:textStyle="bold"
-                android:textColor="#6750A4" />
+                android:textColor="#1565C0" />
 
             <TextView
                 android:id="@+id/repaymentDateTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#6750A4"
+                android:textColor="#1565C0"
                 android:paddingStart="4dp" />
         </LinearLayout>
 
@@ -93,13 +93,13 @@
                 android:layout_height="wrap_content"
                 android:text="Status: "
                 android:textStyle="bold"
-                android:textColor="#E92E6C" />
+                android:textColor="#0D47A1" />
 
             <TextView
                 android:id="@+id/statusTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#E92E6C"
+                android:textColor="#0D47A1"
                 android:paddingStart="4dp" />
         </LinearLayout>
 
@@ -117,7 +117,7 @@
                 android:text="Update"
                 android:layout_marginEnd="4dp"
                 android:textColor="#FFFFFF"
-                app:backgroundTint="#6750A4"
+                app:backgroundTint="#2196F3"
                 style="@style/Widget.MaterialComponents.Button" />
 
             <com.google.android.material.button.MaterialButton
@@ -128,7 +128,7 @@
                 android:text="Pay"
                 android:layout_marginStart="4dp"
                 android:textColor="#FFFFFF"
-                app:backgroundTint="#6750A4"
+                app:backgroundTint="#2196F3"
                 style="@style/Widget.MaterialComponents.Button" />
         </LinearLayout>
 
